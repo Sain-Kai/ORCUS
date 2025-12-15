@@ -1,21 +1,31 @@
 ﻿#pragma once
 #include "orcus_config.h"
+#include "orcus_tps.h"
 
 namespace ORCUS {
+
+    enum class OrcusStage {
+        PHASE_3K,
+        PHASE_3N,
+        PHASE_3O,
+        PHASE_3P,
+		PHASE_3Q,
+		PHASE_3W
+    };
 
     struct ThermalSummary {
         double peak_T_ratio;
         double remaining_tps;
         double peak_q;
+        TPSFailureMode failure_mode;
     };
 
-    // Default entrypoint (used by main.cpp)
     void run_default_simulation();
 
-    // Core thermal evaluator (used by Phase-3K, 3M, 3N, etc.)
     ThermalSummary run_thermal_summary(
         const OrcusConfig& cfg,
         double bank_rad
     );
 
+    void print_stage_banner(OrcusStage stage);
 }

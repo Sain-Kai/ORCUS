@@ -29,8 +29,10 @@
     <ClCompile Include="src\orcus_geom.cpp" />
     <ClCompile Include="src\orcus_guidance.cpp" />
     <ClCompile Include="src\orcus_heat.cpp" />
+    <ClCompile Include="src\orcus_montecarlo.cpp" />
     <ClCompile Include="src\orcus_physics.cpp" />
     <ClCompile Include="src\orcus_tps.cpp" />
+    <ClCompile Include="src\orcus_tps_min.cpp" />
     <ClCompile Include="src\orcus_tps_opt.cpp" />
     <ClCompile Include="src\orcus_traj_opt.cpp" />
     <ClCompile Include="src\orcus_uncertainity.cpp" />
@@ -46,8 +48,10 @@
     <ClInclude Include="include\orcus_geom.h" />
     <ClInclude Include="include\orcus_guidance.h" />
     <ClInclude Include="include\orcus_heat.h" />
+    <ClInclude Include="include\orcus_montecarlo.h" />
     <ClInclude Include="include\orcus_physics.h" />
     <ClInclude Include="include\orcus_tps.h" />
+    <ClInclude Include="include\orcus_tps_min.h" />
     <ClInclude Include="include\orcus_tps_opt.h" />
     <ClInclude Include="include\orcus_traj_opt.h" />
     <ClInclude Include="include\orcus_uncertainity.h" />

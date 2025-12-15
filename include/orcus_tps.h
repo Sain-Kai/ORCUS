@@ -2,24 +2,31 @@
 
 namespace ORCUS {
 
+    enum class TPSFailureMode {
+        NONE = 0,
+
+        TPS_EXHAUSTED = 1,
+        OVER_TEMPERATURE = 2,
+
+        ABLATION = TPS_EXHAUSTED,
+        OVER_TEMP = OVER_TEMPERATURE
+    };
+
     struct TPSState {
         double T_surface;
         double T_bulk;
         double thickness;
         bool failed;
-
-        // -------- Phase-3K additions --------
-        double max_T_surface = 0.0;
-        double max_q_net = 0.0;
+        TPSFailureMode failure_mode;
     };
 
     struct TPSMaterial {
-        double density;       // kg/m^3
-        double cp;            // J/kg-K
-        double k;             // W/m-K
+        double density;
+        double cp;
+        double k;
         double emissivity;
-        double Tmax;          // K
-        double L_abl;         // J/kg (heat of ablation)
+        double Tmax;
+        double L_abl;
     };
 
     TPSState update_tps_ablation(
@@ -29,4 +36,14 @@ namespace ORCUS {
         double dt
     );
 
-}
+    
+    inline const char* to_string(TPSFailureMode m) {
+        switch (m) {
+        case TPSFailureMode::NONE: return "NONE";
+        case TPSFailureMode::TPS_EXHAUSTED: return "TPS_EXHAUSTED";
+        case TPSFailureMode::OVER_TEMPERATURE: return "OVER_TEMPERATURE";
+        default: return "UNKNOWN";
+        }
+    }
+
+} // namespace ORCUS

@@ -60,6 +60,12 @@
     <ClCompile Include="src\orcus_envelope.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\orcus_tps_min.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\orcus_montecarlo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\orcus_core.h">
@@ -105,6 +111,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\orcus_envelope.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orcus_tps_min.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orcus_montecarlo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

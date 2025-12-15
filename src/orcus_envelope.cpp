@@ -5,7 +5,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <limits>
 
 namespace ORCUS {
 
@@ -29,23 +28,31 @@ namespace ORCUS {
 
                     OrcusConfig cfg = default_config();
 
-                    // Entry angle control
+                    // Entry angle variation
                     cfg.initial_vz_mps =
-                        cfg.initial_speed_mps * std::sin(gamma0 * PI / 180.0);
+                        cfg.initial_speed_mps *
+                        std::sin(gamma0 * PI / 180.0);
 
-                    // Geometry control
+                    // Geometry variation
                     cfg.nose_radius_m = Rn;
 
                     ThermalSummary s =
                         run_thermal_summary(cfg, bank_deg * PI / 180.0);
 
                     bool failed =
-                        (s.peak_T_ratio >= 1.0) ||
-                        (s.remaining_tps <= 0.0);
+                        (s.failure_mode != TPSFailureMode::NONE);
 
+                    // WORSE logic (CERTIFICATION STYLE):
+                    // 1) Any failure beats non-failure
+                    // 2) Higher T/Tmax beats lower
+                    // 3) If tied, lower remaining TPS is worse
                     bool worse =
-                        (s.peak_T_ratio > worst.peak_T_ratio) ||
-                        (s.peak_q > worst.peak_q);
+                        (failed && worst.survived) ||
+                        (failed == !worst.survived &&
+                            s.peak_T_ratio > worst.peak_T_ratio) ||
+                        (failed == !worst.survived &&
+                            std::abs(s.peak_T_ratio - worst.peak_T_ratio) < 1e-6 &&
+                            s.remaining_tps < worst.remaining_tps);
 
                     if (worse) {
                         worst.entry_gamma_deg = gamma0;
@@ -62,7 +69,7 @@ namespace ORCUS {
                         << " bank=" << bank_deg
                         << " Rn=" << Rn
                         << " T/Tmax=" << s.peak_T_ratio
-                        << " survived=" << !failed
+                        << " failure=" << static_cast<int>(s.failure_mode)
                         << "\n";
                 }
             }
