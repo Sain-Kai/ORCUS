@@ -33,4 +33,13 @@ namespace ORCUS {
         return std::sqrt(gamma_air * Rgas * temperature(h));
     }
 
+    // ---------------------------------
+    // NEW: Atmospheric pressure
+    // ---------------------------------
+    double pressure(double h) {
+        double T = temperature(h);
+        double rho = density(h);
+        return rho * Rgas * T;
+    }
+
 }

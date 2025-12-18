@@ -1,4 +1,10 @@
-﻿  orcus_heat.cpp
-  orcus_tps.cpp
+﻿  orcus_core.cpp
+  orcus_dynamics.cpp
+  orcus_envelope.cpp
+  orcus_heat.cpp
+  orcus_physics.cpp
+  orcus_tps_min.cpp
+  orcus_tps_opt.cpp
+  orcus_traj_opt.cpp
   Generating Code...
   ORCUS.vcxproj -> F:\ORCUS\x64\Debug\ORCUS.exe

@@ -2,6 +2,7 @@
 #include "../include/orcus_dynamics.h"
 #include "../include/orcus_physics.h"
 #include "../include/orcus_heat.h"
+#include "../include/orcus_flowfield.h"     // Phase-4C-1
 #include "../include/orcus_tps.h"
 #include "../include/orcus_guidance.h"
 #include "../include/orcus_constants.h"
@@ -23,32 +24,40 @@ namespace ORCUS {
     void print_stage_banner(OrcusStage stage) {
         std::cout << "\n====================================\n";
         switch (stage) {
+
         case OrcusStage::PHASE_3K:
             std::cout << "ORCUS Phase-3K — Thermal Margin Quantification\n";
             break;
+
         case OrcusStage::PHASE_3N:
             std::cout << "ORCUS Phase-3N — Worst-Case Envelope\n";
             break;
+
         case OrcusStage::PHASE_3P:
             std::cout << "ORCUS Phase-3P — Uncertainty Robustness Analysis\n";
             break;
+
         case OrcusStage::PHASE_3O:
             std::cout << "ORCUS Phase-3O — Certification Traceability\n";
             break;
+
         case OrcusStage::PHASE_3Q:
             std::cout << "ORCUS Phase-3Q — Minimum TPS Closure\n";
             break;
+
         case OrcusStage::PHASE_3W:
             std::cout << "ORCUS Phase-3W — Monte-Carlo Certification\n";
             break;
 
-
+        case OrcusStage::PHASE_4C_1:
+            std::cout << "ORCUS Phase-4C-1 — Shock Stand-off & Stagnation Field\n";
+            break;
         }
         std::cout << "====================================\n";
     }
 
     // ==================================================
-    // Core thermal evaluation (Phase-3K / 3N / 3P base)
+    // Core thermal evaluation (shared by all phases)
     // ==================================================
     ThermalSummary run_thermal_summary(
         const OrcusConfig& cfg,
@@ -141,24 +150,23 @@ namespace ORCUS {
     }
 
     // ======================================
-    // Phase-3O — Explicit stage orchestrator
+    // Master simulation entry point
     // ======================================
     void run_default_simulation() {
 
         std::cout << "ORCUS Phase-3 Engine Running\n";
 
+        OrcusConfig cfg = default_config();
+
         // -------- Phase-3K --------
         print_stage_banner(OrcusStage::PHASE_3K);
-
-        OrcusConfig cfg = default_config();
         ThermalSummary base = run_thermal_summary(cfg, 0.0);
 
-        std::cout << "--- Phase-3K Baseline Thermal Margins ---\n";
         std::cout << "Peak T/Tmax           : " << base.peak_T_ratio << "\n";
         std::cout << "Remaining TPS fraction: " << base.remaining_tps << "\n";
         std::cout << "Peak heat flux        : " << base.peak_q << "\n";
         std::cout << "Failure mode          : "
-            << static_cast<int>(base.failure_mode) << "\n";
+            << to_string(base.failure_mode) << "\n";
 
         // -------- Phase-3N --------
         print_stage_banner(OrcusStage::PHASE_3N);
@@ -166,12 +174,10 @@ namespace ORCUS {
 
         // -------- Phase-3P --------
         print_stage_banner(OrcusStage::PHASE_3P);
-
-        // Uncertainty applied ON TOP of Phase-3K baseline
         run_uncertainty_analysis(
-            density(30000.0),                 // representative high-alt density
-            base.peak_q,                      // from Phase-3K
-            base.peak_T_ratio * 2200.0,       // actual surface temp
+            density(30000.0),
+            base.peak_q,
+            base.peak_T_ratio * 2200.0,
             cfg.tps_thickness_m,
             2200.0
         );
@@ -184,12 +190,35 @@ namespace ORCUS {
         print_stage_banner(OrcusStage::PHASE_3Q);
         run_minimum_tps_search();
 
-		// -------- Phase-3W --------
+        // -------- Phase-3W --------
         print_stage_banner(OrcusStage::PHASE_3W);
-		run_montecarlo_certification();
-        std::cout << "Failure mode       :"
-        <<to_string(base.failure_mode) <<"\n";
+        run_montecarlo_certification();
 
+        // -------- Phase-4C-1 --------
+        print_stage_banner(OrcusStage::PHASE_4C_1);
+
+        double z_ref = 40000.0;
+        double V_ref = cfg.initial_speed_mps;
+        double Mach_ref = V_ref / speed_of_sound(z_ref);
+
+        StagnationField stag =
+            compute_stagnation_field(
+                Mach_ref,
+                1.4,
+                cfg.nose_radius_m,
+                pressure(z_ref),
+                temperature(z_ref)
+            );
+
+        std::cout << "--- Stagnation Flow Field (CFD-Comparable) ---\n";
+        std::cout << "Shock stand-off distance : "
+            << stag.shock_standoff << " m\n";
+        std::cout << "Stagnation pressure     : "
+            << stag.p_stag << " Pa\n";
+        std::cout << "Stagnation temperature  : "
+            << stag.T_stag << " K\n";
+        std::cout << "Stagnation density      : "
+            << stag.rho_stag << " kg/m^3\n";
     }
 
 } // namespace ORCUS

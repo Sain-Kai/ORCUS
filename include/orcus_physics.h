@@ -5,4 +5,5 @@ namespace ORCUS {
     double density(double h);
     double gravity(double h);
     double speed_of_sound(double h);
+	double pressure(double h);
 }

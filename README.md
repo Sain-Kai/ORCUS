@@ -1,131 +1,258 @@
-# 🛰️ ORCUS — Hypersonic Re-Entry Vehicle Simulator
+🛰️ ORCUS — Hypersonic Re-Entry Vehicle Simulator
+Summary
 
----
+ORCUS is a modular, physics-driven hypersonic atmospheric re-entry vehicle simulator focused on aerothermodynamic fidelity, TPS survivability, and certification-style robustness analysis.
 
-## Summary 
+Unlike visualization-centric tools, ORCUS is designed as a failure-aware engineering simulator, where why and how a vehicle fails is as important as whether it survives.
 
-**ORCUS** is a modular, physics-based **hypersonic atmospheric re-entry vehicle simulator** developed to study trajectory evolution, aerothermal loads, and thermal protection system (TPS) survivability under extreme flight conditions.
+Core Objective (Non-Negotiable)
 
-The simulator prioritizes **model transparency, staged physical fidelity, and failure-aware design**, aligning with workflows used in preliminary aerospace vehicle analysis rather than black-box visualization tools.
+Maximize physical realism for hypersonic re-entry within a transparent, extensible research codebase.
 
----
+Every phase added so far exists to:
 
-## Scientific Objectives
+Reduce hidden assumptions
 
-* Model hypersonic re-entry trajectories using numerically stable solvers
-* Estimate stagnation-point heating and total heat load
-* Simulate TPS temperature rise and failure conditions
-* Provide a platform extensible toward CFD / wind-tunnel validated inputs
+Expose physical sensitivities
 
----
+Prevent “false survivability”
 
-## Current Capabilities (v0.3)
+Prepare the model for CFD / wind-tunnel anchoring
 
-### Flight Dynamics
+What ORCUS Can Do Today (v0.4-A)
+1. Flight Dynamics
 
-* 3-DOF point-mass re-entry equations
-* Gravity-turn based trajectory propagation
-* Mach-number-dependent regime handling
-* 4th-order Runge–Kutta (RK4) integration
+3-DOF point-mass re-entry equations
 
-### Atmosphere & Aerodynamics
+Gravity-turn trajectory propagation
 
-* Exponential atmospheric density model
-* Mach-dependent drag coefficient (piecewise)
-* Dynamic pressure computation
-* Hypersonic drag-dominated assumptions
+Bank-angle controlled lift modulation
 
-### Aerothermal Modeling
+Numerically stable RK4 integrator
 
-* Sutton–Graves stagnation-point heating model
-* Parametric Fay–Riddell-style baseline (non-equilibrium chemistry excluded)
-* Convective heat flux estimation
-* Time-integrated heat load tracking
+Explicit vehicle state evolution (position, velocity, attitude rates)
 
-### Thermal Protection System (TPS)
+2. Atmosphere & Gas Properties
 
-* Abstract TPS material model
-* Temperature rise from applied heat flux
-* Thermal closure phase
-* TPS failure detection and mission termination
+Layered atmosphere model
 
----
+Tropospheric lapse rate
 
-## Scientific Assumptions & Scope
+Exponential upper-atmosphere decay
 
-To maintain numerical stability and architectural clarity, ORCUS currently adopts the following assumptions:
+Altitude-varying:
 
-1. **Continuum flow regime** (no rarefied flow modeling)
-2. **Frozen chemistry** (no dissociation or ionization)
-3. **Stagnation-point heating dominance**
-4. **No surface temperature feedback into aerodynamics**
-5. **Axisymmetric vehicle assumption**
-6. **No guidance or control feedback loops** (open-loop trajectory)
+Density
 
-These assumptions are explicitly documented to support academic review, validation planning, and future fidelity upgrades.
+Temperature
 
----
+Speed of sound
 
-## Architecture Overview
+Gravity
 
-```
+Mach number computed from local thermodynamics (not constants)
+
+3. Aerothermal Heating (Phase-3 → Phase-4A)
+
+Enthalpy-limited stagnation heating
+
+Fay–Riddell–style formulation
+
+Based on total stagnation enthalpy (not velocity³ alone)
+
+Radiative heating
+
+Activated in hypersonic regime (Mach > 10)
+
+Density- and shock-temperature-dependent
+
+Surface re-radiation
+
+Stefan–Boltzmann emission
+
+Net heat balance explicitly closed:
+
+q_net = q_conv + q_rad − q_emit
+
+
+⚠️ This eliminated earlier non-physical heat spikes and infinite flux artifacts.
+
+4. Thermal Protection System (TPS) Physics
+
+Material-resolved TPS model:
+
+Density
+
+Specific heat
+
+Conductivity
+
+Emissivity
+
+Ablation energy
+
+Maximum allowable temperature
+
+Coupled surface + bulk temperature evolution
+
+Explicit ablation mass loss
+
+Conductive heat transport through TPS thickness
+
+Physically meaningful failure modes:
+
+TPS_EXHAUSTED
+
+OVER_TEMPERATURE
+
+No artificial “survival flags” — failure emerges naturally.
+
+5. Phase-3 Certification Stack (Completed)
+
+Each phase exists for engineering validation, not decoration.
+
+Phase-3K — Thermal Margin Quantification
+
+Baseline trajectory evaluation
+
+Peak heat flux
+
+Peak temperature ratio
+
+Remaining TPS margin
+
+Phase-3N — Worst-Case Envelope
+
+Sweeps over:
+
+Entry flight-path angle
+
+Bank angle
+
+Nose radius
+
+Identifies true worst-case re-entry
+
+Detects hidden non-survivable corners
+
+Phase-3P — Uncertainty Robustness
+
+Conservative stacking of:
+
+Atmospheric density uncertainty
+
+Aerodynamic uncertainty
+
+Heating model uncertainty
+
+Survival assessed under compounded worst-case assumptions
+
+Phase-3Q — Minimum TPS Closure
+
+Iterative TPS thickness testing
+
+Answers:
+
+“What is the minimum TPS that survives all certified phases?”
+
+Phase-3W — Monte-Carlo Certification
+
+Hundreds to thousands of randomized runs
+
+Tracks:
+
+Survival rate
+
+Failure statistics
+
+Worst-case outcomes
+
+Produces a certification matrix, not a single trajectory lie
+
+6. Failure-First Design Philosophy
+
+ORCUS does not tune parameters to “make it survive”.
+
+If the model fails:
+
+The physics is interrogated
+
+The assumption is exposed
+
+The fix is justified
+
+This is intentional and correct for hypersonic research.
+
+Scientific Assumptions (Explicit & Traceable)
+
+ORCUS currently assumes:
+
+Continuum flow regime
+
+Frozen chemistry (no dissociation / ionization yet)
+
+Stagnation-point heating dominance
+
+Axisymmetric blunt body
+
+No aero-thermal shape change
+
+Open-loop guidance (no feedback control)
+
+Each assumption is isolated in code, making removal or upgrade feasible.
+
+Architecture Overview
 ORCUS/
 │
-├── src/
-│   ├── core/        # Trajectory driver & mission logic
-│   ├── physics/     # Atmosphere, aero, heat flux, constants
-│   ├── thermal/     # TPS & thermal closure
-│   ├── solver/      # RK4 integrator
-│   └── state/       # Vehicle state definitions
+├── include/
+│   ├── orcus_core.h          # Phase orchestration
+│   ├── orcus_physics.h       # Atmosphere & gas properties
+│   ├── orcus_heat.h          # Aerothermal models
+│   ├── orcus_tps.h           # TPS physics & failure
+│   ├── orcus_guidance.h      # Skip guidance logic
+│   ├── orcus_envelope.h      # Worst-case sweeps
+│   └── orcus_constants.h
 │
-├── docs/
-├── assets/
-└── README.md
-```
+├── src/
+│   ├── core/
+│   ├── physics/
+│   ├── thermal/
+│   ├── dynamics/
+│   └── certification/
+│
+├── data/
+├── README.md
+└── CHANGELOG.md
 
----
+Versioning Policy
 
-## Versioning Policy
+0.x → Physics closure & certification logic
 
-ORCUS follows **semantic-style staged versioning**:
+1.0 → CFD / wind-tunnel anchored heating
 
-* **0.x** → Research & architecture stabilization
-* **1.0** → Validated physics + visualization
-* **2.0** → Guidance, control, and optimization
+2.0 → Guidance, control & optimization
 
-Detailed change history is maintained in `CHANGELOG.md`.
+Build Instructions
+Windows (Visual Studio)
 
----
+Open ORCUS.sln
 
-## Build Instructions
+Build: x64 | Debug / Release
 
-### Windows (Visual Studio)
+Run executable
 
-* Open `ORCUS.sln`
-* Build: `x64 | Release`
-* Run executable
-
-### GCC / MinGW
-
-```bash
+GCC / MinGW
 g++ -std=c++17 -O2 src/**/*.cpp -Iinclude -o orcus
 ./orcus
-```
 
----
+License
 
-## License
+MIT License — see LICENSE.md
 
-MIT License — see `LICENSE.md`
+Author
 
----
+Sohan Manna
+B.Tech (VIT)
+Hypersonic Flight • Aerothermodynamics • Failure-Aware Simulation
 
-## Author
-
-**Sohan Manna**
-Lead Developer — ORCUS
-Hypersonic Flight • Aerothermodynamics • Simulation Architecture
-
----
-
-> **ORCUS is intentionally engineered as a closing physical system — where assumptions, limits, and failures are as important as successful trajectories.**
+ORCUS is built to fail honestly before it ever claims to survive.

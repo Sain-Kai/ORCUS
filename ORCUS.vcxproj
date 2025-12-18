@@ -21,11 +21,13 @@
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\orcus_aero.cpp" />
+    <ClCompile Include="src\orcus_aerothermal.cpp" />
     <ClCompile Include="src\orcus_bank.cpp" />
     <ClCompile Include="src\orcus_config.cpp" />
     <ClCompile Include="src\orcus_core.cpp" />
     <ClCompile Include="src\orcus_dynamics.cpp" />
     <ClCompile Include="src\orcus_envelope.cpp" />
+    <ClCompile Include="src\orcus_flowfield.cpp" />
     <ClCompile Include="src\orcus_geom.cpp" />
     <ClCompile Include="src\orcus_guidance.cpp" />
     <ClCompile Include="src\orcus_heat.cpp" />
@@ -39,12 +41,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\orcus_aero.h" />
+    <ClInclude Include="include\orcus_aerothermal.h" />
     <ClInclude Include="include\orcus_bank.h" />
     <ClInclude Include="include\orcus_config.h" />
     <ClInclude Include="include\orcus_constants.h" />
     <ClInclude Include="include\orcus_core.h" />
     <ClInclude Include="include\orcus_dynamics.h" />
     <ClInclude Include="include\orcus_envelope.h" />
+    <ClInclude Include="include\orcus_flowfield.h" />
     <ClInclude Include="include\orcus_geom.h" />
     <ClInclude Include="include\orcus_guidance.h" />
     <ClInclude Include="include\orcus_heat.h" />
