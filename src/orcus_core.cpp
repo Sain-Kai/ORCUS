@@ -2,7 +2,9 @@
 #include "../include/orcus_dynamics.h"
 #include "../include/orcus_physics.h"
 #include "../include/orcus_heat.h"
-#include "../include/orcus_flowfield.h"     // Phase-4C-1
+#include "../include/orcus_flowfield.h"      // Phase-4C-1
+#include "../include/orcus_boundary_layer.h" // Phase-4C-2
+#include "../include/orcus_bl_heating.h"     // Phase-4C-3
 #include "../include/orcus_tps.h"
 #include "../include/orcus_guidance.h"
 #include "../include/orcus_constants.h"
@@ -52,12 +54,18 @@ namespace ORCUS {
         case OrcusStage::PHASE_4C_1:
             std::cout << "ORCUS Phase-4C-1 — Shock Stand-off & Stagnation Field\n";
             break;
+        case OrcusStage::PHASE_4C_2:
+            std::cout << "ORCUS Phase-4C-2 — Boundary-Layer Integral Equations\n";
+			break;
+        case OrcusStage::PHASE_4C_3:
+            std::cout << "ORCUS Phase-4C-3 — Wall Heat Flux from BL Theory\n";
+			break;
         }
         std::cout << "====================================\n";
     }
 
     // ==================================================
-    // Core thermal evaluation (shared by all phases)
+    // Core thermal evaluation (unchanged)
     // ==================================================
     ThermalSummary run_thermal_summary(
         const OrcusConfig& cfg,
@@ -85,17 +93,12 @@ namespace ORCUS {
         tps_state.T_bulk = 300.0;
         tps_state.thickness = cfg.tps_thickness_m;
         tps_state.failed = false;
-        tps_state.failure_mode = TPSFailureMode::NONE;
 
         State6DOF s{};
-        s.x = 0.0;
-        s.y = 0.0;
         s.z = cfg.initial_altitude_m;
         s.vx = cfg.initial_speed_mps;
-        s.vy = 0.0;
         s.vz = cfg.initial_vz_mps;
-        s.q0 = 1.0; s.q1 = s.q2 = s.q3 = 0.0;
-        s.p = s.q = s.r = 0.0;
+        s.q0 = 1.0;
 
         const double dt = 0.02;
 
@@ -109,34 +112,22 @@ namespace ORCUS {
             double Rex = rho * V * veh.cref / 1.8e-5;
 
             HeatFlux H = compute_heating(
-                rho,
-                V,
-                cfg.nose_radius_m,
-                gamma,
-                Mach,
-                Rex,
+                rho, V, cfg.nose_radius_m,
+                gamma, Mach, Rex,
                 tps_state.T_surface,
                 tps.emissivity
             );
 
             out.peak_q = std::max(out.peak_q, H.q_net);
 
-            tps_state = update_tps_ablation(
-                tps_state,
-                tps,
-                H.q_net,
-                dt
-            );
+            tps_state = update_tps_ablation(tps_state, tps, H.q_net, dt);
 
-            out.peak_T_ratio = std::max(
-                out.peak_T_ratio,
-                tps_state.T_surface / tps.Tmax
-            );
+            out.peak_T_ratio =
+                std::max(out.peak_T_ratio, tps_state.T_surface / tps.Tmax);
 
-            out.remaining_tps = std::min(
-                out.remaining_tps,
-                tps_state.thickness / cfg.tps_thickness_m
-            );
+            out.remaining_tps =
+                std::min(out.remaining_tps,
+                    tps_state.thickness / cfg.tps_thickness_m);
 
             GuidanceCmd gcmd =
                 skip_guidance(s.z, Mach, H.q_net, gamma, cfg);
@@ -149,13 +140,10 @@ namespace ORCUS {
         return out;
     }
 
-    // ======================================
     // Master simulation entry point
-    // ======================================
     void run_default_simulation() {
 
         std::cout << "ORCUS Phase-3 Engine Running\n";
-
         OrcusConfig cfg = default_config();
 
         // -------- Phase-3K --------
@@ -194,7 +182,7 @@ namespace ORCUS {
         print_stage_banner(OrcusStage::PHASE_3W);
         run_montecarlo_certification();
 
-        // -------- Phase-4C-1 --------
+        // Phase-4C-1: Shock stand-off & stagnation field
         print_stage_banner(OrcusStage::PHASE_4C_1);
 
         double z_ref = 40000.0;
@@ -210,7 +198,7 @@ namespace ORCUS {
                 temperature(z_ref)
             );
 
-        std::cout << "--- Stagnation Flow Field (CFD-Comparable) ---\n";
+        std::cout << "--- Stagnation Flow Field ---\n";
         std::cout << "Shock stand-off distance : "
             << stag.shock_standoff << " m\n";
         std::cout << "Stagnation pressure     : "
@@ -219,6 +207,51 @@ namespace ORCUS {
             << stag.T_stag << " K\n";
         std::cout << "Stagnation density      : "
             << stag.rho_stag << " kg/m^3\n";
+
+        // Phase-4C-2: Boundary-layer integral equations
+        constexpr double mu_air = 1.8e-5;
+        constexpr double x_ref = 0.1;
+
+        BoundaryLayerProps bl =
+            compute_boundary_layer(
+                stag.rho_stag,
+                mu_air,
+                V_ref,
+                x_ref,
+                1.0e6
+            );
+
+        std::cout << "--- Boundary Layer (Integral Solver) ---\n";
+        std::cout << "State                  : "
+            << (bl.state == BoundaryLayerState::LAMINAR ?
+                "Laminar" : "Transitional") << "\n";
+        std::cout << "Momentum thickness     : "
+            << bl.theta << " m\n";
+        std::cout << "Energy thickness       : "
+            << bl.delta_e << " m\n";
+        std::cout << "Skin friction coeff Cf : "
+            << bl.Cf << "\n";
+        std::cout << "Wall shear stress      : "
+            << bl.tau_w << " Pa\n";
+
+        // Phase-4C-3: Wall heat flux from BL theory
+        constexpr double CP_AIR = 1005.0;
+
+        BLHeatFlux q_bl =
+            compute_bl_heat_flux(
+                bl,
+                stag.rho_stag,
+                V_ref,
+                CP_AIR,
+                stag.T_stag,
+                300.0
+            );
+
+        std::cout << "--- Wall Heat Flux (BL Theory) ---\n";
+        std::cout << "Stanton number         : "
+            << q_bl.Stanton << "\n";
+        std::cout << "Wall heat flux q_w     : "
+            << q_bl.q_wall << " W/m^2\n";
     }
 
 } // namespace ORCUS

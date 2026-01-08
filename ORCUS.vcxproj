@@ -23,6 +23,8 @@
     <ClCompile Include="src\orcus_aero.cpp" />
     <ClCompile Include="src\orcus_aerothermal.cpp" />
     <ClCompile Include="src\orcus_bank.cpp" />
+    <ClCompile Include="src\orcus_bl_heating.cpp" />
+    <ClCompile Include="src\orcus_boundary_layer.cpp" />
     <ClCompile Include="src\orcus_config.cpp" />
     <ClCompile Include="src\orcus_core.cpp" />
     <ClCompile Include="src\orcus_dynamics.cpp" />
@@ -43,6 +45,8 @@
     <ClInclude Include="include\orcus_aero.h" />
     <ClInclude Include="include\orcus_aerothermal.h" />
     <ClInclude Include="include\orcus_bank.h" />
+    <ClInclude Include="include\orcus_bl_heating.h" />
+    <ClInclude Include="include\orcus_boundary_layer.h" />
     <ClInclude Include="include\orcus_config.h" />
     <ClInclude Include="include\orcus_constants.h" />
     <ClInclude Include="include\orcus_core.h" />

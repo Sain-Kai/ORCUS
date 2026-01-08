@@ -11,7 +11,9 @@ namespace ORCUS {
         PHASE_3P,
 		PHASE_3Q,
 		PHASE_3W,
-        PHASE_4C_1
+        PHASE_4C_1,
+        PHASE_4C_2,
+		PHASE_4C_3
     };
 
     struct ThermalSummary {
