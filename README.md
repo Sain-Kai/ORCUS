@@ -177,7 +177,7 @@ Worst remaining TPS : 0
 ## 📁 Repository Structure
 
 ORCUS/
-├── include/ # Public headers
+├── include/ # Public headers (stable interfaces)
 │ ├── orcus_core.h
 │ ├── orcus_physics.h
 │ ├── orcus_heat.h
@@ -186,7 +186,7 @@ ORCUS/
 │ ├── orcus_bl_heating.h
 │ └── ...
 │
-├── src/ # Implementation
+├── src/ # Core implementation (physics & logic)
 │ ├── orcus_core.cpp
 │ ├── orcus_dynamics.cpp
 │ ├── orcus_heat.cpp
@@ -196,11 +196,22 @@ ORCUS/
 │ └── ...
 │
 ├── docs/ # Technical documentation (planned)
-├── data/ # Test cases / reference data
+│ ├── theory_notes.md # Governing equations & assumptions
+│ ├── validation.md # CFD / wind-tunnel comparison notes
+│ └── ...
+│
+├── data/ # Test cases & reference datasets
+│ ├── baseline_cases/
+│ ├── monte_carlo_inputs/
+│ └── ...
+│
 ├── python/ # Post-processing & plotting (planned)
-└── README.md
-
----
+│ ├── trajectory_analysis.py
+│ ├── heating_envelopes.py
+│ └── ...
+│
+├── README.md # Project overview & research roadmap
+└── LICENSE.md---
 
 ## 🧭 Roadmap (Planned & In-Progress)
 
