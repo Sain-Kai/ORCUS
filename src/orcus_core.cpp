@@ -16,8 +16,9 @@
 #include "../include/orcus_montecarlo.h"
 #include "../include/orcus_shock_layer.h"
 #include "../include/orcus_real_gas.h"
-#include "../include/orcus_surface_chemistry.h"
 #include "../include/orcus_noneq_chemistry.h"
+#include "../include/orcus_surface_chemistry.h"
+#include "../include/orcus_radiation.h"
 
 #include <iostream>
 #include <cmath>
@@ -74,6 +75,7 @@ namespace ORCUS {
 
         case OrcusStage::PHASE_4C_5:
 			std::cout << "ORCUS Phase-4C-5 — Shock-Layer Finite Thickness Correction\n";
+            break;
         
         case OrcusStage::PHASE_4D:
             std::cout << "ORCUS Phase-4D — Real-Gas Thermodynamic Correction\n";
@@ -86,6 +88,11 @@ namespace ORCUS {
         case OrcusStage::PHASE_4F:
             std::cout << "ORCUS Phase-4F — Non-Equilibrium Gas Chemistry\n";
 			break;
+
+        case OrcusStage::PHASE_4G:
+            std::cout << "ORCUS Phase-4G — Radiation Gas Coupling\n";
+			break;
+
         }
         std::cout << "====================================\n";
     }
@@ -382,6 +389,30 @@ namespace ORCUS {
             << nc.heat_multiplier << "\n";
         std::cout << "Nonequilibrium heat flux : "
             << q_noneq << " W/m^2\n";
+
+        // -------- Phase-4G: Radiation–gas coupling --------
+        print_stage_banner(OrcusStage::PHASE_4G);
+
+        RadiationProps rad =
+            compute_radiative_coupling(
+                stag.T_stag,
+                stag.rho_stag,
+                sl.thickness,   // shock-layer thickness as optical path
+                300.0           // wall temperature
+            );
+
+        double q_total =
+            q_noneq + rad.net_radiative_heat;
+
+        std::cout << "--- Radiation–Gas Coupling ---\n";
+        std::cout << "Gas emissive power        : "
+            << rad.emissive_power << " W/m^2\n";
+        std::cout << "Absorption factor         : "
+            << rad.absorption_factor << "\n";
+        std::cout << "Net radiative heat flux   : "
+            << rad.net_radiative_heat << " W/m^2\n";
+        std::cout << "TOTAL wall heat flux      : "
+            << q_total << " W/m^2\n";
 
     }
 } // namespace ORCUS

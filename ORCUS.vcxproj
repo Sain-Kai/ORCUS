@@ -38,6 +38,7 @@
     <ClCompile Include="src\orcus_noneq_chemistry.cpp" />
     <ClCompile Include="src\orcus_physics.cpp" />
     <ClCompile Include="src\orcus_pns_energy.cpp" />
+    <ClCompile Include="src\orcus_radiation.cpp" />
     <ClCompile Include="src\orcus_real_gas.cpp" />
     <ClCompile Include="src\orcus_shock_layer.cpp" />
     <ClCompile Include="src\orcus_surface_chemistry.cpp" />
@@ -66,6 +67,7 @@
     <ClInclude Include="include\orcus_noneq_chemistry.h" />
     <ClInclude Include="include\orcus_physics.h" />
     <ClInclude Include="include\orcus_pns_energy.h" />
+    <ClInclude Include="include\orcus_radiation.h" />
     <ClInclude Include="include\orcus_real_gas.h" />
     <ClInclude Include="include\orcus_surface_chemistry.h" />
     <ClInclude Include="include\orcus_tps.h" />
