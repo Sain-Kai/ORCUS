@@ -3,7 +3,7 @@
   orcus_core.cpp
   orcus_envelope.cpp
   orcus_montecarlo.cpp
-  orcus_real_gas.cpp
+  orcus_surface_chemistry.cpp
   orcus_tps_min.cpp
   Generating Code...
   ORCUS.vcxproj -> E:\ORCUS\x64\Debug\ORCUS.exe

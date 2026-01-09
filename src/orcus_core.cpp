@@ -16,6 +16,7 @@
 #include "../include/orcus_montecarlo.h"
 #include "../include/orcus_shock_layer.h"
 #include "../include/orcus_real_gas.h"
+#include "../include/orcus_surface_chemistry.h"
 
 #include <iostream>
 #include <cmath>
@@ -77,6 +78,9 @@ namespace ORCUS {
             std::cout << "ORCUS Phase-4D — Real-Gas Thermodynamic Correction\n";
 			break;
 
+        case OrcusStage::PHASE_4E:
+            std::cout << "ORCUS Phase-4E — Surface Chemistry & Catalysis\n";
+			break;
         }
         std::cout << "====================================\n";
     }
@@ -314,6 +318,43 @@ namespace ORCUS {
         std::cout << "Real-gas corrected heat  : "
             << q_real_gas << " W/m^2\n";
 
+        // -------- Phase-4E: Surface chemistry & catalysis --------
+        print_stage_banner(OrcusStage::PHASE_4E);
+
+        // Select wall catalysis model (can be config-driven later)
+        CatalysisModel wall_model =
+            CatalysisModel::PARTIALLY_CATALYTIC;
+
+        SurfaceChemistryProps sc =
+            compute_surface_chemistry(
+                300.0,   // Wall temperature (current TPS surface temp)
+                wall_model
+            );
+
+        double q_surface_chem =
+            q_real_gas * sc.heat_multiplier;
+
+        std::cout << "--- Surface Chemistry Correction ---\n";
+        std::cout << "Catalysis model          : ";
+
+        switch (wall_model) {
+        case CatalysisModel::NON_CATALYTIC:
+            std::cout << "Non-catalytic\n";
+            break;
+        case CatalysisModel::PARTIALLY_CATALYTIC:
+            std::cout << "Partially catalytic\n";
+            break;
+        case CatalysisModel::FULLY_CATALYTIC:
+            std::cout << "Fully catalytic\n";
+            break;
+        }
+
+        std::cout << "Recombination efficiency : "
+            << sc.efficiency << "\n";
+        std::cout << "Heat multiplier          : "
+            << sc.heat_multiplier << "\n";
+        std::cout << "Chemistry-corrected heat : "
+            << q_surface_chem << " W/m^2\n";
 
     }
 } // namespace ORCUS
