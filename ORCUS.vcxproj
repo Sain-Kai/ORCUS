@@ -49,6 +49,7 @@
     <ClCompile Include="src\orcus_tps_opt.cpp" />
     <ClCompile Include="src\orcus_traj_opt.cpp" />
     <ClCompile Include="src\orcus_uncertainity.cpp" />
+    <ClCompile Include="src\orcus_viscous_inviscid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\orcus_aero.h" />
@@ -79,6 +80,7 @@
     <ClInclude Include="include\orcus_tps_opt.h" />
     <ClInclude Include="include\orcus_traj_opt.h" />
     <ClInclude Include="include\orcus_uncertainity.h" />
+    <ClInclude Include="include\orcus_viscous_inviscid.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>

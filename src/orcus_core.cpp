@@ -21,6 +21,7 @@
 #include "../include/orcus_radiation.h"
 #include "../include/orcus_inviscid.h"
 #include "../include/orcus_displacement_bl.h"   // Phase-5B
+#include "../include/orcus_viscous_inviscid.h"
 
 #include <iostream>
 #include <cmath>
@@ -101,6 +102,10 @@ namespace ORCUS {
 
 		case OrcusStage::PHASE_5B:
 			std::cout << "ORCUS Phase-5B — Displacement Thickness Correction\n";
+            break;
+
+        case OrcusStage::PHASE_5C:
+            std::cout << "ORCUS Phase-5C - Viscous-Inviscid Coupling\n";
         }
         std::cout << "====================================\n";
     }
@@ -450,9 +455,7 @@ namespace ORCUS {
         // NOTE: memory cleanup (explicit, deterministic)
         delete[] inv.pts;
 
-        // =========================================================
-// Phase-5B — Boundary-Layer Displacement Thickness
-// =========================================================
+        // Phase-5B — Boundary-Layer Displacement Thickness
         print_stage_banner(OrcusStage::PHASE_5B);
 
         bool is_turbulent =
@@ -474,6 +477,30 @@ namespace ORCUS {
         std::cout << "Displacement thickness δ* : "
             << dstar.delta_star << " m\n";
 
+        // Phase-5C — Viscous–Inviscid Coupling 
+        print_stage_banner(OrcusStage::PHASE_5C);
+
+        VICouplingResult vi =
+            solve_viscous_inviscid(
+                cfg.nose_radius_m,
+                dstar.delta_star,
+                Mach_ref,
+                1.4
+            );
+
+        std::cout << "--- Viscous–Inviscid Coupling ---\n";
+        std::cout << "Original nose radius     : "
+            << cfg.nose_radius_m << " m\n";
+        std::cout << "Displacement thickness   : "
+            << dstar.delta_star << " m\n";
+        std::cout << "Effective radius         : "
+            << vi.effective_radius << " m\n";
+        std::cout << "Cp correction factor     : "
+            << vi.Cp_correction << "\n";
+        std::cout << "Coupling iterations      : "
+            << vi.iterations << "\n";
+        std::cout << "Final residual           : "
+            << vi.convergence_error << "\n";
 
     }
 } // namespace ORCUS
