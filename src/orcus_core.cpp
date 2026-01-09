@@ -20,6 +20,7 @@
 #include "../include/orcus_surface_chemistry.h"
 #include "../include/orcus_radiation.h"
 #include "../include/orcus_inviscid.h"
+#include "../include/orcus_displacement_bl.h"   // Phase-5B
 
 #include <iostream>
 #include <cmath>
@@ -96,6 +97,10 @@ namespace ORCUS {
 
         case OrcusStage::PHASE_5A:
 			std::cout << "ORCUS Phase-5A — Inviscid Outer Flow Forebody Analysis\n";
+			break;
+
+		case OrcusStage::PHASE_5B:
+			std::cout << "ORCUS Phase-5B — Displacement Thickness Correction\n";
         }
         std::cout << "====================================\n";
     }
@@ -444,6 +449,31 @@ namespace ORCUS {
 
         // NOTE: memory cleanup (explicit, deterministic)
         delete[] inv.pts;
+
+        // =========================================================
+// Phase-5B — Boundary-Layer Displacement Thickness
+// =========================================================
+        print_stage_banner(OrcusStage::PHASE_5B);
+
+        bool is_turbulent =
+            (bl.state == BoundaryLayerState::TURBULENT ||
+                bl.state == BoundaryLayerState::TRANSITIONAL);
+
+        DisplacementBL dstar =
+            compute_displacement_thickness(
+                bl.theta,
+                bl.Cf,
+                is_turbulent
+            );
+
+        std::cout << "--- Boundary Layer Displacement ---\n";
+        std::cout << "Momentum thickness θ      : "
+            << bl.theta << " m\n";
+        std::cout << "Shape factor H            : "
+            << dstar.shape_factor << "\n";
+        std::cout << "Displacement thickness δ* : "
+            << dstar.delta_star << " m\n";
+
 
     }
 } // namespace ORCUS

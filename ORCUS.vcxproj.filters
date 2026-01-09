@@ -102,6 +102,9 @@
     <ClCompile Include="src\orcus_inviscid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\orcus_displacement_bl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\orcus_core.h">
@@ -183,6 +186,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\orcus_inviscid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\orcus_displacement_bl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
