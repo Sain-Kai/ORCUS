@@ -14,6 +14,7 @@ E:\ORCUS\src\orcus_geom.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_geom.obj
 E:\ORCUS\src\orcus_guidance.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_guidance.obj
 E:\ORCUS\src\orcus_heat.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_heat.obj
 E:\ORCUS\src\orcus_montecarlo.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_montecarlo.obj
+E:\ORCUS\src\orcus_noneq_chemistry.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_noneq_chemistry.obj
 E:\ORCUS\src\orcus_physics.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_physics.obj
 E:\ORCUS\src\orcus_pns_energy.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_pns_energy.obj
 E:\ORCUS\src\orcus_real_gas.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_real_gas.obj

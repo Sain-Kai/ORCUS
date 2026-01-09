@@ -17,6 +17,7 @@
 #include "../include/orcus_shock_layer.h"
 #include "../include/orcus_real_gas.h"
 #include "../include/orcus_surface_chemistry.h"
+#include "../include/orcus_noneq_chemistry.h"
 
 #include <iostream>
 #include <cmath>
@@ -80,6 +81,10 @@ namespace ORCUS {
 
         case OrcusStage::PHASE_4E:
             std::cout << "ORCUS Phase-4E — Surface Chemistry & Catalysis\n";
+			break;
+
+        case OrcusStage::PHASE_4F:
+            std::cout << "ORCUS Phase-4F — Non-Equilibrium Gas Chemistry\n";
 			break;
         }
         std::cout << "====================================\n";
@@ -355,6 +360,28 @@ namespace ORCUS {
             << sc.heat_multiplier << "\n";
         std::cout << "Chemistry-corrected heat : "
             << q_surface_chem << " W/m^2\n";
+
+        // -------- Phase-4F: Nonequilibrium gas chemistry --------
+        print_stage_banner(OrcusStage::PHASE_4F);
+
+        NoneqChemistryProps nc =
+            compute_noneq_chemistry(
+                stag.T_stag,
+                Mach_ref
+            );
+
+        double q_noneq =
+            q_surface_chem * nc.heat_multiplier;
+
+        std::cout << "--- Nonequilibrium Chemistry Correction ---\n";
+        std::cout << "Dissociation fraction    : "
+            << nc.dissociation_fraction << "\n";
+        std::cout << "Relaxation factor        : "
+            << nc.relaxation_factor << "\n";
+        std::cout << "Heat multiplier          : "
+            << nc.heat_multiplier << "\n";
+        std::cout << "Nonequilibrium heat flux : "
+            << q_noneq << " W/m^2\n";
 
     }
 } // namespace ORCUS
