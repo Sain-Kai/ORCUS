@@ -53,6 +53,7 @@
     <ClCompile Include="src\orcus_tps_distribution.cpp" />
     <ClCompile Include="src\orcus_tps_min.cpp" />
     <ClCompile Include="src\orcus_tps_opt.cpp" />
+    <ClCompile Include="src\orcus_tps_time_history.cpp" />
     <ClCompile Include="src\orcus_traj_opt.cpp" />
     <ClCompile Include="src\orcus_uncertainity.cpp" />
     <ClCompile Include="src\orcus_viscous_inviscid.cpp" />
@@ -90,6 +91,7 @@
     <ClInclude Include="include\orcus_tps_distribution.h" />
     <ClInclude Include="include\orcus_tps_min.h" />
     <ClInclude Include="include\orcus_tps_opt.h" />
+    <ClInclude Include="include\orcus_tps_time_history.h" />
     <ClInclude Include="include\orcus_traj_opt.h" />
     <ClInclude Include="include\orcus_uncertainity.h" />
     <ClInclude Include="include\orcus_viscous_inviscid.h" />

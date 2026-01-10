@@ -28,6 +28,8 @@
 #include "../include/orcus_export.h"
 #include "../include/orcus_coupled_loop.h"
 #include "../include/orcus_surface_heat_distribution.h"
+#include "../include/orcus_tps_time_history.h"
+
 #include <iostream>
 #include <cmath>
 #include <algorithm>
@@ -135,6 +137,11 @@ namespace ORCUS {
 
         case OrcusStage::PHASE_6B:
 			std::cout << "ORCUS Phase-6B — Surface Heat Distribution\n";
+            break;
+
+		case OrcusStage::PHASE_6D:
+            std::cout << "ORCUS Phase-6D — TPS Time-History Analysis\n";
+			break;
         }
         std::cout << "====================================\n";
     }
@@ -784,6 +791,42 @@ namespace ORCUS {
                 << p.s << "\t"
                 << p.theta * 180.0 / PI << "\t"
                 << p.q_local << "\n";
+        }
+
+        // -------- Phase-6D: TPS Time History --------
+        print_stage_banner(OrcusStage::PHASE_6D);
+
+        Vehicle6DOF veh6{};
+        veh6.mass = 1500.0;
+        veh6.Sref = 1.8;
+        veh6.cref = 2.0;
+        veh6.bank = 0.0;
+        veh6.Ixx = 800;
+        veh6.Iyy = 1200;
+        veh6.Izz = 1000;
+
+        TPSMaterial tps6{};
+        tps6.density = 1600.0;
+        tps6.cp = 1250.0;
+        tps6.k = 0.15;
+        tps6.emissivity = 0.9;
+        tps6.Tmax = 2200.0;
+        tps6.L_abl = 2.5e6;
+
+        TPSTimeHistory hist =
+            run_tps_time_history(cfg, veh6, tps);
+
+        std::cout << "--- TPS Time History ---\n";
+        std::cout << "Total steps        : " << hist.time.size() << "\n";
+        std::cout << "Final thickness    : "
+            << hist.thickness.back() << " m\n";
+
+        if (hist.failed) {
+            std::cout << "TPS FAILED at t = "
+                << hist.failure_time << " s\n";
+        }
+        else {
+            std::cout << "TPS survived entire trajectory\n";
         }
 
     }
