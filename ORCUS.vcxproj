@@ -31,6 +31,7 @@
     <ClCompile Include="src\orcus_displacement_bl.cpp" />
     <ClCompile Include="src\orcus_dynamics.cpp" />
     <ClCompile Include="src\orcus_envelope.cpp" />
+    <ClCompile Include="src\orcus_export.cpp" />
     <ClCompile Include="src\orcus_flowfield.cpp" />
     <ClCompile Include="src\orcus_geom.cpp" />
     <ClCompile Include="src\orcus_guidance.cpp" />
@@ -66,6 +67,7 @@
     <ClInclude Include="include\orcus_displacement_bl.h" />
     <ClInclude Include="include\orcus_dynamics.h" />
     <ClInclude Include="include\orcus_envelope.h" />
+    <ClInclude Include="include\orcus_export.h" />
     <ClInclude Include="include\orcus_flowfield.h" />
     <ClInclude Include="include\orcus_geom.h" />
     <ClInclude Include="include\orcus_guidance.h" />

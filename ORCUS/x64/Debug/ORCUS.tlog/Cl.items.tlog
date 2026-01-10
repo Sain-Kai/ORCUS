@@ -10,6 +10,7 @@ E:\ORCUS\src\orcus_core.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_core.obj
 E:\ORCUS\src\orcus_displacement_bl.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_displacement_bl.obj
 E:\ORCUS\src\orcus_dynamics.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_dynamics.obj
 E:\ORCUS\src\orcus_envelope.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_envelope.obj
+E:\ORCUS\src\orcus_export.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_export.obj
 E:\ORCUS\src\orcus_flowfield.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_flowfield.obj
 E:\ORCUS\src\orcus_geom.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_geom.obj
 E:\ORCUS\src\orcus_guidance.cpp;E:\ORCUS\ORCUS\x64\Debug\orcus_guidance.obj

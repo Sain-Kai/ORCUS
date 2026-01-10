@@ -25,6 +25,8 @@
 #include "../include/orcus_surface_distribution.h"
 #include "../include/orcus_tps_distribution.h"
 #include "../include/orcus_structure_thermal.h"
+#include "../include/orcus_export.h"
+
 
 #include <iostream>
 #include <cmath>
@@ -122,6 +124,9 @@ namespace ORCUS {
         case OrcusStage::PHASE_5F:
             std::cout << "ORCUS Phase-5F — Internal Structure-Thermal Stress\n";
 			break;
+
+        case OrcusStage::PHASE_5G:
+			std::cout << "ORCUS Phase-5G — Data Export & CFD Coupling Interface\n";
         }
         std::cout << "====================================\n";
     }
@@ -590,9 +595,8 @@ namespace ORCUS {
                 << " m | failed=" << t.failed << "\n";
         }
 
-        // =========================================================
-// Phase-5F — Internal Structure Thermal Stress
-// =========================================================
+        // Phase-5F — Internal Structure Thermal Stress
+ 
         print_stage_banner(OrcusStage::PHASE_5F);
 
         StructureThermalProps st =
@@ -622,6 +626,28 @@ namespace ORCUS {
             std::cout << "Structure within allowable limits\n";
         }
 
+        // Phase-5G — Export for CFD / Certification
+        print_stage_banner(OrcusStage::PHASE_5G);
+
+        std::vector<ExportSurfacePoint> export_data;
+
+        for (size_t i = 0; i < tps_map.tiles.size(); ++i) {
+            ExportSurfacePoint p{};
+            p.x = tps_map.tiles[i].x;
+            p.q_wall = q_noneq;
+            p.tps_remaining = tps_map.tiles[i].thickness_remain;
+            p.T_structure = st.T_structure;
+            p.thermal_stress = st.thermal_stress;
+
+            export_data.push_back(p);
+        }
+
+        export_surface_csv(
+            "orcus_surface_results.csv",
+            export_data
+        );
+
+        std::cout << "Exported: orcus_surface_results.csv\n";
 
     }
 } // namespace ORCUS
