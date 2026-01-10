@@ -23,6 +23,8 @@
 #include "../include/orcus_displacement_bl.h"   // Phase-5B
 #include "../include/orcus_viscous_inviscid.h"
 #include "../include/orcus_surface_distribution.h"
+#include "../include/orcus_tps_distribution.h"
+
 #include <iostream>
 #include <cmath>
 #include <algorithm>
@@ -110,6 +112,10 @@ namespace ORCUS {
 
         case OrcusStage::PHASE_5D:
             std::cout << "ORCUS Phase-5D — Surface Cp(x) & Heat-Flux Distribution\n";
+            break;
+
+        case OrcusStage::PHASE_5E:
+            std::cout << "ORCUS Phase-5E — TPS Tile-by-Tile Recession Mapping\n";
 
         }
         std::cout << "====================================\n";
@@ -507,9 +513,7 @@ namespace ORCUS {
         std::cout << "Final residual           : "
             << vi.convergence_error << "\n";
 
-        // =========================================================
-// Phase-5D — Surface-Resolved Pressure & Heating
-// =========================================================
+        // Phase-5D — Surface-Resolved Pressure & Heating
         print_stage_banner(OrcusStage::PHASE_5D);
 
         constexpr double BODY_LENGTH = 4.0;   // meters
@@ -541,6 +545,46 @@ namespace ORCUS {
                 << " | q=" << surf.points[i].q
                 << " W/m^2\n";
         }
+
+        // Phase-5E — TPS Tile-by-Tile Recession
+        print_stage_banner(OrcusStage::PHASE_5E);
+
+        std::vector<double> xs, qs;
+        for (const auto& p : surf.points) {
+            xs.push_back(p.x);
+            qs.push_back(p.q);
+        }
+
+        TPSDistributionResult tps_map =
+            compute_tps_distribution(
+                cfg.tps_thickness_m,
+                1600.0,      // TPS density (kg/m^3)
+                2.5e6,       // heat of ablation (J/kg)
+                120.0,       // exposure time (s)
+                xs,
+                qs
+            );
+
+        std::cout << "--- TPS Recession Map ---\n";
+        std::cout << "Minimum remaining TPS   : "
+            << tps_map.min_thickness << " m\n";
+
+        if (tps_map.any_failure) {
+            std::cout << "TPS FAILURE at x = "
+                << tps_map.failure_x << " m\n";
+        }
+        else {
+            std::cout << "TPS survived entire surface\n";
+        }
+
+        std::cout << "\nSample tiles:\n";
+        for (size_t i = 0; i < tps_map.tiles.size(); i += 10) {
+            const auto& t = tps_map.tiles[i];
+            std::cout << "x=" << t.x
+                << " m | h_remain=" << t.thickness_remain
+                << " m | failed=" << t.failed << "\n";
+        }
+
 
     }
 } // namespace ORCUS

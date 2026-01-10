@@ -46,6 +46,7 @@
     <ClCompile Include="src\orcus_surface_chemistry.cpp" />
     <ClCompile Include="src\orcus_surface_distribution.cpp" />
     <ClCompile Include="src\orcus_tps.cpp" />
+    <ClCompile Include="src\orcus_tps_distribution.cpp" />
     <ClCompile Include="src\orcus_tps_min.cpp" />
     <ClCompile Include="src\orcus_tps_opt.cpp" />
     <ClCompile Include="src\orcus_traj_opt.cpp" />
@@ -78,6 +79,7 @@
     <ClInclude Include="include\orcus_surface_chemistry.h" />
     <ClInclude Include="include\orcus_surface_distribution.h" />
     <ClInclude Include="include\orcus_tps.h" />
+    <ClInclude Include="include\orcus_tps_distribution.h" />
     <ClInclude Include="include\orcus_tps_min.h" />
     <ClInclude Include="include\orcus_tps_opt.h" />
     <ClInclude Include="include\orcus_traj_opt.h" />
