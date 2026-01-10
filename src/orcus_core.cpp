@@ -27,7 +27,7 @@
 #include "../include/orcus_structure_thermal.h"
 #include "../include/orcus_export.h"
 #include "../include/orcus_coupled_loop.h"
-
+#include "../include/orcus_surface_heat_distribution.h"
 #include <iostream>
 #include <cmath>
 #include <algorithm>
@@ -132,6 +132,9 @@ namespace ORCUS {
         case OrcusStage::PHASE_6A:
             std::cout << "ORCUS Phase-6A — Coupled Aero-Thermo-Structural Loop\n";
 			break;
+
+        case OrcusStage::PHASE_6B:
+			std::cout << "ORCUS Phase-6B — Surface Heat Distribution\n";
         }
         std::cout << "====================================\n";
     }
@@ -759,6 +762,29 @@ namespace ORCUS {
         std::cout << "Peak failure mode        : "
             << to_string(tps_cpl.failure_mode) << "\n";
 
+
+        // -------- Phase-6B: Surface Heat Distribution --------
+        print_stage_banner(OrcusStage::PHASE_6B);
+
+        SurfaceHeatDistribution surfH =
+            compute_surface_heat_distribution(
+                q_noneq,                 // final corrected stagnation heat
+                cfg.nose_radius_m,
+                40                       // discretization points
+            );
+
+        std::cout << "--- Surface Heat Distribution ---\n";
+        std::cout << "Peak heat flux : "
+            << surfH.q_peak << " W/m^2\n";
+
+        std::cout << "s(m)\ttheta(deg)\tq_local(W/m^2)\n";
+
+        for (const auto& p : surfH.points) {
+            std::cout
+                << p.s << "\t"
+                << p.theta * 180.0 / PI << "\t"
+                << p.q_local << "\n";
+        }
 
     }
 } // namespace ORCUS
